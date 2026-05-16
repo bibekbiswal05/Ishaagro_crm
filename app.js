@@ -85,6 +85,7 @@ async function openDashboardByRole(uid) {
   if (userData.role === "technician") {
     showOnly(technicianDashboard);
     resetFarmerForm();
+    captureCurrentLocation();
     return;
   }
 
