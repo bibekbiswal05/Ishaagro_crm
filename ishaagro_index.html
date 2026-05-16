@@ -82,8 +82,52 @@
         <button id="technicianLogout" class="secondary-button" type="button">Logout</button>
       </aside>
       <section class="dashboard-content">
-        <h2>Technician Dashboard</h2>
-        <p>Welcome, Technician. You can submit and view your own farmer records here.</p>
+        <div class="section-heading">
+          <div>
+            <h2>Technician Dashboard</h2>
+            <p>Capture location, fill farmer details, and submit installation records.</p>
+          </div>
+        </div>
+
+        <section class="flow-card">
+          <strong>Login</strong>
+          <span>↓</span>
+          <strong>Add Farmer</strong>
+          <span>↓</span>
+          <strong>Capture GPS</strong>
+          <span>↓</span>
+          <strong>Submit</strong>
+        </section>
+
+        <section class="form-card">
+          <div class="section-heading">
+            <h3>Add Farmer</h3>
+            <button id="captureGpsButton" class="secondary-button" type="button">Capture GPS</button>
+          </div>
+          <p id="farmerMessage" class="message"></p>
+
+          <form id="farmerForm" class="farmer-form">
+            <label>Farmer Name<input name="farmerName" required /></label>
+            <label>Mobile No<input name="mobileNo" inputmode="tel" required /></label>
+            <label>District<input name="district" required /></label>
+            <label>Block<input name="block" required /></label>
+            <label>GP<input name="gp" /></label>
+            <label>Village<input name="village" required /></label>
+            <label class="wide-field">Address<textarea name="address" rows="3"></textarea></label>
+            <label>Date & Time<input id="dateTimeAuto" name="dateTimeAuto" readonly /></label>
+            <label>Current Location<input id="locationAuto" name="locationAuto" readonly placeholder="Click Capture GPS" /></label>
+            <label>Product Type<select name="productType"><option>Drip</option><option>Sprinkler</option></select></label>
+            <label>Area<input name="area" /></label>
+            <label>Size<input name="size" /></label>
+            <label>Spacing<input name="spacing" /></label>
+            <label>Crop<input name="crop" /></label>
+            <label>Installation Date<input name="installationDate" type="date" /></label>
+            <label>Farmer Share<input name="farmerShare" /></label>
+            <label>GPS<select name="gps"><option>1</option><option>2</option><option>3</option></select></label>
+            <label>Status<input name="status" value="Pending" readonly /></label>
+            <button id="submitFarmerButton" class="primary-action wide-field" type="submit">Submit Farmer</button>
+          </form>
+        </section>
       </section>
     </main>
 
