@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>IshaAgro CRM Firestore Setup</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main class="setup-page">
+      <section class="setup-card">
+        <h1>Create Firestore Collections</h1>
+        <p>Sign in with a Firebase Auth account first. The user document will be created with the same document ID as the Auth UID.</p>
+        <label>
+          User Type
+          <select id="setupRole">
+            <option value="admin">Admin</option>
+            <option value="technician">Technician</option>
+          </select>
+        </label>
+        <label>
+          Email
+          <input id="setupEmail" type="email" value="test@ishaagro.in" />
+        </label>
+        <label>
+          Password
+          <input id="setupPassword" type="password" placeholder="Enter Firebase Auth password" />
+        </label>
+        <button id="createCollectionsBtn" type="button">Create Collections</button>
+        <pre id="setupStatus">Ready.</pre>
+      </section>
+    </main>
+
+    <script src="https://www.gstatic.com/firebasejs/12.13.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.13.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="setup-collections.js"></script>
+  </body>
+</html>

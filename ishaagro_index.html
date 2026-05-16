@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>IshaAgro CRM</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main id="loginPage" class="website-login">
+      <section class="login-visual">
+        <div class="brand-row">
+          <span class="brand-mark">IA</span>
+          <div>
+            <strong>IshaAgro CRM</strong>
+            <small>Irrigation field operations</small>
+          </div>
+        </div>
+        <div class="visual-copy">
+          <p class="eyebrow">Irrigation CRM</p>
+          <h1>Track farmers, technicians, and installations from one dashboard.</h1>
+          <p>Built for drip and sprinkler workflows with field-ready access for technicians.</p>
+        </div>
+      </section>
+
+      <section class="login-panel">
+        <div class="login-title-block">
+          <span class="leaf-sprig" aria-hidden="true"></span>
+          <h2>Welcome Back</h2>
+          <p>Login to your IshaAgro CRM account</p>
+        </div>
+
+        <form id="loginForm">
+          <label class="input-shell">
+            <span aria-hidden="true">👤</span>
+            <input id="email" type="email" autocomplete="email" placeholder="Email" required />
+          </label>
+          <label class="input-shell">
+            <span aria-hidden="true">🔒</span>
+            <input id="password" type="password" autocomplete="current-password" placeholder="Password" required />
+            <button id="togglePassword" class="eye-button" type="button" aria-label="Show password">●</button>
+          </label>
+          <div class="login-options">
+            <label class="remember-option">
+              <input id="rememberMe" type="checkbox" checked />
+              <span>Remember Me</span>
+            </label>
+            <button class="forgot-button" type="button">Forget Password?</button>
+          </div>
+          <p id="loginMessage" class="message"></p>
+          <button id="loginButton" type="submit">Login</button>
+        </form>
+      </section>
+    </main>
+
+    <main id="adminDashboard" class="dashboard-page hidden">
+      <aside class="sidebar">
+        <div class="brand-row">
+          <span class="brand-mark">IA</span>
+          <div>
+            <strong>IshaAgro CRM</strong>
+            <small>Admin Dashboard</small>
+          </div>
+        </div>
+        <button id="adminLogout" class="secondary-button" type="button">Logout</button>
+      </aside>
+      <section class="dashboard-content">
+        <h2>Admin Dashboard</h2>
+        <p>Welcome, Admin. You can manage all CRM records here.</p>
+      </section>
+    </main>
+
+    <main id="technicianDashboard" class="dashboard-page hidden">
+      <aside class="sidebar">
+        <div class="brand-row">
+          <span class="brand-mark">IA</span>
+          <div>
+            <strong>IshaAgro CRM</strong>
+            <small>Technician Dashboard</small>
+          </div>
+        </div>
+        <button id="technicianLogout" class="secondary-button" type="button">Logout</button>
+      </aside>
+      <section class="dashboard-content">
+        <h2>Technician Dashboard</h2>
+        <p>Welcome, Technician. You can submit and view your own farmer records here.</p>
+      </section>
+    </main>
+
+    <script src="https://www.gstatic.com/firebasejs/12.13.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.13.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
