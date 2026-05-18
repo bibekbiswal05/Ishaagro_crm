@@ -614,6 +614,29 @@ p {
   color: #256c3c;
 }
 
+.status-select {
+  width: auto;
+  min-width: 124px;
+  min-height: 34px;
+  margin: 0;
+  padding: 0 28px 0 12px;
+  border: 0;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.status-select.pending {
+  background: #fff5cf;
+  color: #7b5700;
+}
+
+.status-select.completed {
+  background: #dff4e7;
+  color: #256c3c;
+}
+
 .table-button,
 .danger-button {
   min-height: 36px;

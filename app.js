@@ -21,6 +21,8 @@ const locationMap = document.getElementById("locationMap");
 const openMapLink = document.getElementById("openMapLink");
 const successModal = document.getElementById("successModal");
 const successOkButton = document.getElementById("successOkButton");
+const adminGreeting = document.getElementById("adminGreeting");
+const technicianGreeting = document.getElementById("technicianGreeting");
 const adminStats = document.getElementById("adminStats");
 const upcomingReminders = document.getElementById("upcomingReminders");
 const farmerRecordsTable = document.getElementById("farmerRecordsTable");
@@ -116,12 +118,14 @@ async function openDashboardByRole(uid) {
   }
 
   if (userData.role === "admin") {
+    adminGreeting.textContent = "Welcome, " + (userData.name || "Admin");
     showOnly(adminDashboard);
     startAdminDashboard();
     return;
   }
 
   if (userData.role === "technician") {
+    technicianGreeting.textContent = "Welcome, " + (userData.name || "Technician");
     showOnly(technicianDashboard);
     resetFarmerForm();
     captureCurrentLocation();
@@ -284,7 +288,12 @@ function renderAdminFarmers() {
             <td>${escapeHtml(farmer.productType || "")}</td>
             <td>${escapeHtml(farmer.installationDate || "Not set")}</td>
             <td>${escapeHtml(getTechnicianName(farmer.technicianId, farmer.technicianEmail))}</td>
-            <td><span class="badge ${String(farmer.status || "Pending").toLowerCase()}">${escapeHtml(farmer.status || "Pending")}</span></td>
+            <td>
+              <select class="status-select ${String(farmer.status || "Pending").toLowerCase()}" data-status-farmer="${farmer.id}">
+                <option ${farmer.status === "Pending" || !farmer.status ? "selected" : ""}>Pending</option>
+                <option ${farmer.status === "Completed" ? "selected" : ""}>Completed</option>
+              </select>
+            </td>
             <td><button class="table-button" data-edit-farmer="${farmer.id}" type="button">Edit</button></td>
           </tr>
         `).join("")}
@@ -294,6 +303,16 @@ function renderAdminFarmers() {
 
   farmerRecordsTable.querySelectorAll("[data-edit-farmer]").forEach((button) => {
     button.addEventListener("click", () => openAdminEdit(button.dataset.editFarmer));
+  });
+  farmerRecordsTable.querySelectorAll("[data-status-farmer]").forEach((select) => {
+    select.addEventListener("change", () => updateFarmerStatus(select.dataset.statusFarmer, select.value));
+  });
+}
+
+async function updateFarmerStatus(farmerId, status) {
+  await db.collection("farmers").doc(farmerId).update({
+    status,
+    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
   });
 }
 
