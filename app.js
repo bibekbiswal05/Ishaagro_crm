@@ -19,6 +19,8 @@ const submitFarmerButton = document.getElementById("submitFarmerButton");
 const mapPreview = document.getElementById("mapPreview");
 const locationMap = document.getElementById("locationMap");
 const openMapLink = document.getElementById("openMapLink");
+const successModal = document.getElementById("successModal");
+const successOkButton = document.getElementById("successOkButton");
 
 let currentLocation = null;
 
@@ -51,6 +53,7 @@ document.getElementById("adminLogout").addEventListener("click", logout);
 document.getElementById("technicianLogout").addEventListener("click", logout);
 captureGpsButton.addEventListener("click", captureCurrentLocation);
 farmerForm.addEventListener("submit", submitFarmerRecord);
+successOkButton.addEventListener("click", startNewFarmerForm);
 
 auth.onAuthStateChanged(async (user) => {
   if (!user) {
@@ -222,8 +225,7 @@ async function submitFarmerRecord(event) {
       updatedAt: firebase.firestore.FieldValue.serverTimestamp()
     });
 
-    resetFarmerForm();
-    farmerMessage.textContent = "Farmer data submitted successfully.";
+    showSuccessModal();
   } catch (error) {
     farmerMessage.textContent = error.message || "Failed to save farmer data.";
   } finally {
@@ -234,6 +236,16 @@ async function submitFarmerRecord(event) {
 
 function clean(value) {
   return String(value || "").trim();
+}
+
+function showSuccessModal() {
+  successModal.classList.remove("hidden");
+}
+
+function startNewFarmerForm() {
+  successModal.classList.add("hidden");
+  resetFarmerForm();
+  captureCurrentLocation();
 }
 
 function getLoginError(error) {
