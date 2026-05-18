@@ -160,6 +160,22 @@ body {
   margin-bottom: 24px;
 }
 
+.brand-row > div {
+  min-width: 0;
+}
+
+.brand-logo {
+  display: block;
+  width: 58px;
+  height: 58px;
+  flex: 0 0 auto;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: 16px;
+  background: #050705;
+  object-fit: cover;
+  box-shadow: 0 14px 30px rgba(23, 32, 38, 0.16);
+}
+
 .brand-mark {
   display: grid;
   width: 52px;
@@ -183,10 +199,28 @@ p {
   font-size: 24px;
 }
 
+.brand-row strong,
+.brand-row small {
+  display: block;
+}
+
 .brand-row p,
 .brand-row small,
 .dashboard-content p {
   color: #66727d;
+}
+
+.login-visual > .brand-row {
+  position: relative;
+  z-index: 1;
+}
+
+.login-visual .brand-row strong {
+  color: #ffffff;
+}
+
+.login-visual .brand-row small {
+  color: rgba(255, 255, 255, 0.76);
 }
 
 .sidebar .brand-row {
@@ -907,6 +941,10 @@ p {
 
 .setup-card p {
   color: #66727d;
+}
+
+.setup-brand {
+  margin-bottom: 22px;
 }
 
 button {
