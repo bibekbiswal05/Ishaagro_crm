@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>IshaAgro CRM</title>
-    <link rel="stylesheet" href="style.css?v=20260518-status" />
+    <link rel="stylesheet" href="style.css?v=20260518-tabs" />
   </head>
   <body>
     <main id="loginPage" class="website-login">
@@ -62,6 +62,12 @@
             <small>Admin Dashboard</small>
           </div>
         </div>
+        <nav class="admin-tabs" aria-label="Admin features">
+          <button class="active" data-admin-tab="overview" type="button">Dashboard</button>
+          <button data-admin-tab="farmers" type="button">Farmers</button>
+          <button data-admin-tab="reminders" type="button">Reminders</button>
+          <button data-admin-tab="technicians" type="button">Technicians</button>
+        </nav>
         <button id="adminLogout" class="secondary-button" type="button">Logout</button>
       </aside>
       <section class="dashboard-content">
@@ -71,16 +77,17 @@
           <p>Manage farmer records, technicians, and installation progress for IshaAgro.</p>
         </section>
 
-        <section id="adminStats" class="stats-grid"></section>
-
-        <section class="admin-grid">
+        <section class="admin-panel-section" data-admin-panel="overview">
+          <section id="adminStats" class="stats-grid"></section>
           <section class="form-card">
             <div class="section-heading">
-              <h3>Upcoming Reminders</h3>
+              <h3>Recent Updates</h3>
             </div>
-            <div id="upcomingReminders" class="reminder-list"></div>
+            <div id="recentUpdates" class="reminder-list"></div>
           </section>
+        </section>
 
+        <section class="admin-panel-section hidden" data-admin-panel="reminders">
           <section class="form-card">
             <div class="section-heading">
               <h3>Create Reminder</h3>
@@ -95,66 +102,78 @@
               <p id="reminderMessage" class="message"></p>
             </form>
           </section>
+          <section class="form-card">
+            <div class="section-heading">
+              <h3>Upcoming Reminders</h3>
+            </div>
+            <div id="upcomingReminders" class="reminder-list"></div>
+          </section>
         </section>
 
-        <section class="form-card">
-          <div class="section-heading">
-            <h3>Farmer Records</h3>
-            <button id="exportCsvButton" class="secondary-button" type="button">Export CSV</button>
-          </div>
-          <div class="filters-grid">
-            <label>Technician<select id="filterTechnician"><option value="">All technicians</option></select></label>
-            <label>District<input id="filterDistrict" placeholder="Search district" /></label>
-            <label>Status<select id="filterStatus"><option value="">All status</option><option>Pending</option><option>Completed</option></select></label>
-            <label>Product Type<select id="filterProduct"><option value="">All products</option><option>Drip</option><option>Sprinkler</option></select></label>
-            <label>Installation Date<input id="filterInstallDate" type="date" /></label>
-          </div>
-          <div id="farmerRecordsTable" class="table-wrap"></div>
-        </section>
+        <section class="admin-panel-section hidden" data-admin-panel="farmers">
+          <section class="form-card">
+            <div class="section-heading">
+              <h3>Farmer Records</h3>
+              <button id="exportCsvButton" class="secondary-button" type="button">Export CSV</button>
+            </div>
+            <div class="filters-grid">
+              <label>Technician<select id="filterTechnician"><option value="">All technicians</option></select></label>
+              <label>District<input id="filterDistrict" placeholder="Search district" /></label>
+              <label>Status<select id="filterStatus"><option value="">All status</option><option>Pending</option><option>Completed</option></select></label>
+              <label>Product Type<select id="filterProduct"><option value="">All products</option><option>Drip</option><option>Sprinkler</option></select></label>
+              <label>Installation Date<input id="filterInstallDate" type="date" /></label>
+            </div>
+            <div id="farmerRecordsTable" class="table-wrap"></div>
+          </section>
 
-        <section id="adminEditPanel" class="form-card hidden">
-          <div class="section-heading">
-            <h3>Edit Farmer Record</h3>
-            <button id="cancelEditFarmer" class="secondary-button" type="button">Cancel</button>
-          </div>
-          <form id="adminEditForm" class="farmer-form">
-            <input name="id" type="hidden" />
-            <label>Farmer Name<input name="farmerName" required /></label>
-            <label>Mobile No<input name="mobileNo" inputmode="tel" required /></label>
-            <label>District<input name="district" required /></label>
-            <label>Block<input name="block" required /></label>
-            <label>GP<input name="gp" /></label>
-            <label>Village<input name="village" required /></label>
-            <label class="wide-field">Address<textarea name="address" rows="3"></textarea></label>
-            <label>Product Type<select name="productType"><option>Drip</option><option>Sprinkler</option></select></label>
-            <label>Area (Acre)<input name="area" /></label>
-            <label>Size<input name="size" /></label>
-            <label>Spacing<input name="spacing" /></label>
-            <label>Crop<input name="crop" /></label>
-            <label>Installation Date<input name="installationDate" type="date" /></label>
-            <label>Farmer Share<input name="farmerShare" /></label>
-            <label>GPS<select name="gps"><option>1</option><option>2</option><option>3</option></select></label>
-            <label>Status<select name="status"><option>Pending</option><option>Completed</option></select></label>
-            <button class="primary-action wide-field" type="submit">Save Changes</button>
-            <p id="editFarmerMessage" class="message wide-field"></p>
-          </form>
-        </section>
+          <section id="farmerDetailPanel" class="form-card hidden"></section>
 
-        <section class="form-card">
-          <div class="section-heading">
-            <h3>Manage Technicians</h3>
-          </div>
-          <div class="admin-grid">
-            <form id="technicianForm" class="compact-form">
-              <input id="editingTechnicianId" type="hidden" />
-              <label>Name<input id="technicianName" required /></label>
-              <label>Email<input id="technicianEmail" type="email" required /></label>
-              <label id="technicianPasswordLabel">Password<input id="technicianPassword" type="password" minlength="6" required /></label>
-              <button class="primary-action" type="submit">Save Technician</button>
-              <p id="technicianMessage" class="message"></p>
+          <section id="adminEditPanel" class="form-card hidden">
+            <div class="section-heading">
+              <h3>Edit Farmer Record</h3>
+              <button id="cancelEditFarmer" class="secondary-button" type="button">Cancel</button>
+            </div>
+            <form id="adminEditForm" class="farmer-form">
+              <input name="id" type="hidden" />
+              <label>Farmer Name<input name="farmerName" required /></label>
+              <label>Mobile No<input name="mobileNo" inputmode="tel" required /></label>
+              <label>District<input name="district" required /></label>
+              <label>Block<input name="block" required /></label>
+              <label>GP<input name="gp" /></label>
+              <label>Village<input name="village" required /></label>
+              <label class="wide-field">Address<textarea name="address" rows="3"></textarea></label>
+              <label>Product Type<select name="productType"><option>Drip</option><option>Sprinkler</option></select></label>
+              <label>Area (Acre)<input name="area" /></label>
+              <label>Size<input name="size" /></label>
+              <label>Spacing<input name="spacing" /></label>
+              <label>Crop<input name="crop" /></label>
+              <label>Installation Date<input name="installationDate" type="date" /></label>
+              <label>Farmer Share<input name="farmerShare" /></label>
+              <label>GPS<select name="gps"><option>1</option><option>2</option><option>3</option></select></label>
+              <label>Status<select name="status"><option>Pending</option><option>Completed</option></select></label>
+              <button class="primary-action wide-field" type="submit">Save Changes</button>
+              <p id="editFarmerMessage" class="message wide-field"></p>
             </form>
-            <div id="technicianList" class="technician-list"></div>
-          </div>
+          </section>
+        </section>
+
+        <section class="admin-panel-section hidden" data-admin-panel="technicians">
+          <section class="form-card">
+            <div class="section-heading">
+              <h3>Manage Technicians</h3>
+            </div>
+            <div class="admin-grid">
+              <form id="technicianForm" class="compact-form">
+                <input id="editingTechnicianId" type="hidden" />
+                <label>Name<input id="technicianName" required /></label>
+                <label>Email<input id="technicianEmail" type="email" required /></label>
+                <label id="technicianPasswordLabel">Password<input id="technicianPassword" type="password" minlength="6" required /></label>
+                <button class="primary-action" type="submit">Save Technician</button>
+                <p id="technicianMessage" class="message"></p>
+              </form>
+              <div id="technicianList" class="technician-list"></div>
+            </div>
+          </section>
         </section>
       </section>
     </main>
@@ -228,7 +247,7 @@
     <script src="https://www.gstatic.com/firebasejs/12.13.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/12.13.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore-compat.js"></script>
-    <script src="firebase-config.js?v=20260518-status"></script>
-    <script src="app.js?v=20260518-status"></script>
+    <script src="firebase-config.js?v=20260518-tabs"></script>
+    <script src="app.js?v=20260518-tabs"></script>
   </body>
 </html>

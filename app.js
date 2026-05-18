@@ -43,6 +43,10 @@ const technicianForm = document.getElementById("technicianForm");
 const technicianList = document.getElementById("technicianList");
 const technicianMessage = document.getElementById("technicianMessage");
 const technicianPasswordLabel = document.getElementById("technicianPasswordLabel");
+const adminTabButtons = document.querySelectorAll("[data-admin-tab]");
+const adminPanels = document.querySelectorAll("[data-admin-panel]");
+const recentUpdates = document.getElementById("recentUpdates");
+const farmerDetailPanel = document.getElementById("farmerDetailPanel");
 
 let currentLocation = null;
 let adminFarmers = [];
@@ -87,6 +91,9 @@ reminderForm.addEventListener("submit", createReminder);
 technicianForm.addEventListener("submit", saveTechnician);
 [filterTechnician, filterDistrict, filterStatus, filterProduct, filterInstallDate].forEach((filter) => {
   filter.addEventListener("input", renderAdminFarmers);
+});
+adminTabButtons.forEach((button) => {
+  button.addEventListener("click", () => showAdminTab(button.dataset.adminTab));
 });
 
 auth.onAuthStateChanged(async (user) => {
@@ -150,6 +157,15 @@ function showOnly(activePage) {
   activePage.classList.remove("hidden");
 }
 
+function showAdminTab(tabName) {
+  adminTabButtons.forEach((button) => {
+    button.classList.toggle("active", button.dataset.adminTab === tabName);
+  });
+  adminPanels.forEach((panel) => {
+    panel.classList.toggle("hidden", panel.dataset.adminPanel !== tabName);
+  });
+}
+
 function startAdminDashboard() {
   if (adminListenersStarted) {
     renderAdminDashboard();
@@ -197,6 +213,7 @@ function stopAdminDashboard() {
 function renderAdminDashboard() {
   renderAdminStats();
   renderAdminDropdowns();
+  renderRecentUpdates();
   renderAdminFarmers();
   renderUpcomingReminders();
   renderTechnicianList();
@@ -218,6 +235,39 @@ function renderAdminStats() {
 
 function statCard(label, value) {
   return `<article class="stat-card"><span>${label}</span><strong>${value}</strong></article>`;
+}
+
+function renderRecentUpdates() {
+  const recentFarmers = adminFarmers.slice(0, 5).map((farmer) => ({
+    type: "Farmer",
+    title: farmer.farmerName || "New farmer",
+    detail: `${farmer.status || "Pending"} • ${farmer.village || farmer.district || "Location not set"}`,
+    time: getTimeValue(farmer.createdAt || farmer.dateTime)
+  }));
+  const recentReminders = adminReminders.slice(0, 3).map((reminder) => ({
+    type: "Reminder",
+    title: reminder.title || "Reminder",
+    detail: `${getFarmerName(reminder.farmerId)} • ${reminder.reminderDate || "Date not set"}`,
+    time: getTimeValue(reminder.createdAt)
+  }));
+  const updates = [...recentFarmers, ...recentReminders]
+    .sort((a, b) => b.time - a.time)
+    .slice(0, 8);
+
+  if (!updates.length) {
+    recentUpdates.innerHTML = `<div class="empty-state">No recent updates yet.</div>`;
+    return;
+  }
+
+  recentUpdates.innerHTML = updates.map((item) => `
+    <article class="reminder-item">
+      <div>
+        <strong>${escapeHtml(item.title)}</strong>
+        <small>${escapeHtml(item.detail)}</small>
+      </div>
+      <span class="badge">${escapeHtml(item.type)}</span>
+    </article>
+  `).join("");
 }
 
 function renderAdminDropdowns() {
@@ -294,13 +344,21 @@ function renderAdminFarmers() {
                 <option ${farmer.status === "Completed" ? "selected" : ""}>Completed</option>
               </select>
             </td>
-            <td><button class="table-button" data-edit-farmer="${farmer.id}" type="button">Edit</button></td>
+            <td>
+              <div class="row-actions">
+                <button class="table-button" data-view-farmer="${farmer.id}" type="button">View</button>
+                <button class="table-button" data-edit-farmer="${farmer.id}" type="button">Edit</button>
+              </div>
+            </td>
           </tr>
         `).join("")}
       </tbody>
     </table>
   `;
 
+  farmerRecordsTable.querySelectorAll("[data-view-farmer]").forEach((button) => {
+    button.addEventListener("click", () => openFarmerDetails(button.dataset.viewFarmer));
+  });
   farmerRecordsTable.querySelectorAll("[data-edit-farmer]").forEach((button) => {
     button.addEventListener("click", () => openAdminEdit(button.dataset.editFarmer));
   });
@@ -314,6 +372,86 @@ async function updateFarmerStatus(farmerId, status) {
     status,
     updatedAt: firebase.firestore.FieldValue.serverTimestamp()
   });
+}
+
+function openFarmerDetails(farmerId) {
+  const farmer = adminFarmers.find((item) => item.id === farmerId);
+  if (!farmer) return;
+
+  const hasLocation = farmer.location?.lat && farmer.location?.lng;
+  const googleMapUrl = hasLocation ? `https://www.google.com/maps?q=${farmer.location.lat},${farmer.location.lng}` : "";
+  const mapEmbed = hasLocation ? getOpenStreetMapEmbed(farmer.location.lat, farmer.location.lng) : "";
+
+  farmerDetailPanel.classList.remove("hidden");
+  farmerDetailPanel.innerHTML = `
+    <div class="section-heading">
+      <h3>Farmer Details</h3>
+      <button class="secondary-button" id="closeFarmerDetails" type="button">Close</button>
+    </div>
+    <div class="detail-grid">
+      ${detailItem("Farmer Name", farmer.farmerName)}
+      ${detailItem("Mobile No", farmer.mobileNo)}
+      ${detailItem("District", farmer.district)}
+      ${detailItem("Block", farmer.block)}
+      ${detailItem("GP", farmer.gp)}
+      ${detailItem("Village", farmer.village)}
+      ${detailItem("Address", farmer.address)}
+      ${detailItem("Product Type", farmer.productType)}
+      ${detailItem("Area (Acre)", farmer.area)}
+      ${detailItem("Size", farmer.size)}
+      ${detailItem("Spacing", farmer.spacing)}
+      ${detailItem("Crop", farmer.crop)}
+      ${detailItem("Installation Date", farmer.installationDate)}
+      ${detailItem("Farmer Share", farmer.farmerShare)}
+      ${detailItem("GPS", farmer.gps)}
+      ${detailItem("Status", farmer.status || "Pending")}
+      ${detailItem("Technician", getTechnicianName(farmer.technicianId, farmer.technicianEmail))}
+      ${detailItem("Submitted At", formatDateTime(farmer.createdAt || farmer.dateTime))}
+      ${detailItem("Current Location", farmer.locationText || "Not captured")}
+    </div>
+    ${hasLocation ? `
+      <div class="map-preview detail-map">
+        <div class="map-header">
+          <strong>Location Map</strong>
+          <div class="row-actions">
+            <a href="${googleMapUrl}" target="_blank" rel="noopener">Open Map</a>
+            <button class="table-button" id="shareLocationButton" type="button">Share Location</button>
+          </div>
+        </div>
+        <iframe title="Farmer location map" loading="lazy" src="${mapEmbed}"></iframe>
+      </div>
+    ` : `<div class="empty-state">No location captured for this farmer.</div>`}
+  `;
+
+  document.getElementById("closeFarmerDetails").addEventListener("click", () => {
+    farmerDetailPanel.classList.add("hidden");
+    farmerDetailPanel.innerHTML = "";
+  });
+
+  document.getElementById("shareLocationButton")?.addEventListener("click", () => {
+    shareLocation(googleMapUrl);
+  });
+
+  farmerDetailPanel.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function detailItem(label, value) {
+  return `<article class="detail-item"><span>${escapeHtml(label)}</span><strong>${escapeHtml(value || "Not set")}</strong></article>`;
+}
+
+function getOpenStreetMapEmbed(lat, lng) {
+  const delta = 0.004;
+  const bbox = [lng - delta, lat - delta, lng + delta, lat + delta].join(",");
+  return `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${lat},${lng}`;
+}
+
+async function shareLocation(url) {
+  if (navigator.share) {
+    await navigator.share({ title: "IshaAgro Farmer Location", url });
+    return;
+  }
+  await navigator.clipboard.writeText(url);
+  alert("Location link copied.");
 }
 
 function openAdminEdit(farmerId) {
@@ -682,6 +820,11 @@ function isToday(value) {
   const time = getTimeValue(value);
   if (!time) return false;
   return new Date(time).toDateString() === new Date().toDateString();
+}
+
+function formatDateTime(value) {
+  const time = getTimeValue(value);
+  return time ? new Date(time).toLocaleString() : "Not set";
 }
 
 function showSuccessModal() {
