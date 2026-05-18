@@ -16,6 +16,9 @@ const captureGpsButton = document.getElementById("captureGpsButton");
 const dateTimeAuto = document.getElementById("dateTimeAuto");
 const locationAuto = document.getElementById("locationAuto");
 const submitFarmerButton = document.getElementById("submitFarmerButton");
+const mapPreview = document.getElementById("mapPreview");
+const locationMap = document.getElementById("locationMap");
+const openMapLink = document.getElementById("openMapLink");
 
 let currentLocation = null;
 
@@ -112,6 +115,9 @@ function resetFarmerForm() {
   farmerMessage.textContent = "";
   setAutoDateTime();
   locationAuto.value = "";
+  mapPreview.classList.add("hidden");
+  locationMap.removeAttribute("src");
+  openMapLink.href = "#";
 }
 
 function setAutoDateTime() {
@@ -137,6 +143,7 @@ function captureCurrentLocation() {
         accuracy: position.coords.accuracy
       };
       locationAuto.value = currentLocation.lat.toFixed(6) + ", " + currentLocation.lng.toFixed(6);
+      updateLocationMap(currentLocation.lat, currentLocation.lng);
       farmerMessage.textContent = "GPS location captured.";
       captureGpsButton.disabled = false;
     },
@@ -150,6 +157,20 @@ function captureCurrentLocation() {
       maximumAge: 0
     }
   );
+}
+
+function updateLocationMap(lat, lng) {
+  const delta = 0.004;
+  const bbox = [
+    lng - delta,
+    lat - delta,
+    lng + delta,
+    lat + delta
+  ].join(",");
+
+  locationMap.src = "https://www.openstreetmap.org/export/embed.html?bbox=" + bbox + "&layer=mapnik&marker=" + lat + "," + lng;
+  openMapLink.href = "https://www.google.com/maps?q=" + lat + "," + lng;
+  mapPreview.classList.remove("hidden");
 }
 
 async function submitFarmerRecord(event) {

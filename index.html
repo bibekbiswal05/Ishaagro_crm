@@ -108,6 +108,13 @@
             <label class="wide-field">Address<textarea name="address" rows="3"></textarea></label>
             <label>Date & Time<input id="dateTimeAuto" name="dateTimeAuto" readonly /></label>
             <label>Current Location<input id="locationAuto" name="locationAuto" readonly placeholder="Click Capture GPS" /></label>
+            <section id="mapPreview" class="map-preview wide-field hidden">
+              <div class="map-header">
+                <strong>Current Location Map</strong>
+                <a id="openMapLink" href="#" target="_blank" rel="noopener">Open in Google Maps</a>
+              </div>
+              <iframe id="locationMap" title="Current location map" loading="lazy"></iframe>
+            </section>
             <label>Product Type<select name="productType"><option>Drip</option><option>Sprinkler</option></select></label>
             <label>Area<input name="area" /></label>
             <label>Size<input name="size" /></label>
