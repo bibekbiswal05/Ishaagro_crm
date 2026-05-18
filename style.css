@@ -5,6 +5,32 @@ body {
   color: #172026;
 }
 
+* {
+  box-sizing: border-box;
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes softScale {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
 .hidden {
   display: none !important;
 }
@@ -204,7 +230,9 @@ p {
 }
 
 .dashboard-content {
-  padding: 34px;
+  width: min(100%, 1500px);
+  padding: 30px;
+  animation: fadeUp 0.45s ease both;
 }
 
 .dashboard-content h2 {
@@ -215,14 +243,15 @@ p {
 .dashboard-hero {
   position: relative;
   overflow: hidden;
-  margin-bottom: 22px;
-  padding: 34px;
-  border-radius: 24px;
+  margin-bottom: 20px;
+  padding: clamp(24px, 4vw, 34px);
+  border-radius: 22px;
   background:
     linear-gradient(135deg, rgba(18, 55, 37, 0.92), rgba(35, 116, 67, 0.86)),
     url("https://images.unsplash.com/photo-1625246333195-78d9c38ad449?auto=format&fit=crop&w=1600&q=80") center/cover;
   color: #ffffff;
   box-shadow: 0 24px 58px rgba(21, 52, 34, 0.18);
+  animation: fadeUp 0.4s ease both;
 }
 
 .dashboard-hero::after {
@@ -245,6 +274,7 @@ p {
 .dashboard-hero h2 {
   margin: 0 0 14px;
   color: #ffffff;
+  font-size: clamp(32px, 4.6vw, 52px);
 }
 
 .dashboard-hero p:not(.eyebrow) {
@@ -260,7 +290,7 @@ p {
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  margin-bottom: 18px;
+  margin-bottom: 16px;
 }
 
 .section-heading h3 {
@@ -280,9 +310,17 @@ p {
 .flow-card,
 .form-card {
   border: 1px solid rgba(221, 231, 234, 0.86);
-  border-radius: 22px;
+  border-radius: 20px;
   background: #ffffff;
-  box-shadow: 0 18px 48px rgba(23, 32, 38, 0.08);
+  box-shadow: 0 14px 38px rgba(23, 32, 38, 0.07);
+  animation: fadeUp 0.42s ease both;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.form-card:hover,
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 46px rgba(23, 32, 38, 0.1);
 }
 
 .flow-card {
@@ -312,8 +350,8 @@ p {
 .form-card {
   position: relative;
   overflow: hidden;
-  margin-bottom: 22px;
-  padding: 28px;
+  margin-bottom: 18px;
+  padding: clamp(18px, 2.5vw, 26px);
 }
 
 .form-card::before {
@@ -331,8 +369,8 @@ p {
   position: relative;
   z-index: 1;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 18px;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 16px;
   align-items: start;
 }
 
@@ -441,19 +479,21 @@ p {
 
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 16px;
-  margin-bottom: 22px;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 14px;
+  margin-bottom: 18px;
 }
 
 .stat-card {
-  min-height: 118px;
-  padding: 20px;
+  min-height: 108px;
+  padding: 18px;
   border: 1px solid rgba(221, 231, 234, 0.86);
   border-top: 5px solid #3d8954;
-  border-radius: 20px;
+  border-radius: 18px;
   background: #ffffff;
-  box-shadow: 0 18px 48px rgba(23, 32, 38, 0.08);
+  box-shadow: 0 14px 38px rgba(23, 32, 38, 0.07);
+  animation: fadeUp 0.42s ease both;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
 }
 
 .stat-card span {
@@ -466,21 +506,22 @@ p {
 
 .stat-card strong {
   color: #172026;
-  font-size: 34px;
+  font-size: 32px;
   line-height: 1;
 }
 
 .admin-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: 18px;
+  align-items: start;
 }
 
 .filters-grid,
 .compact-form {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
-  gap: 14px;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
   margin-bottom: 18px;
 }
 
@@ -510,6 +551,9 @@ p {
 .table-wrap {
   width: 100%;
   overflow-x: auto;
+  border: 1px solid #e5eee8;
+  border-radius: 16px;
+  background: #ffffff;
 }
 
 .records-table {
@@ -520,17 +564,26 @@ p {
 
 .records-table th,
 .records-table td {
-  padding: 13px 12px;
+  padding: 12px;
   border-bottom: 1px solid #e5eee8;
   text-align: left;
   vertical-align: middle;
 }
 
 .records-table th {
+  background: #f5faf7;
   color: #66727d;
   font-size: 12px;
   font-weight: 900;
   text-transform: uppercase;
+}
+
+.records-table tbody tr {
+  transition: background 0.16s ease;
+}
+
+.records-table tbody tr:hover {
+  background: #f9fcfa;
 }
 
 .records-table td small {
@@ -593,8 +646,16 @@ p {
   gap: 14px;
   padding: 14px;
   border: 1px solid #d9e8dc;
-  border-radius: 16px;
+  border-radius: 14px;
   background: #f9fcfa;
+  transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+}
+
+.reminder-item:hover,
+.technician-item:hover {
+  transform: translateY(-1px);
+  border-color: #bcd6c4;
+  background: #ffffff;
 }
 
 .reminder-item small,
@@ -796,6 +857,7 @@ pre {
   place-items: center;
   padding: 22px;
   background: rgba(12, 29, 19, 0.58);
+  animation: softScale 0.18s ease both;
 }
 
 .modal-box {
@@ -805,6 +867,7 @@ pre {
   background: #ffffff;
   box-shadow: 0 28px 80px rgba(12, 29, 19, 0.26);
   text-align: center;
+  animation: fadeUp 0.24s ease both;
 }
 
 .modal-icon {
@@ -839,10 +902,6 @@ pre {
 
 @media (max-width: 1180px) {
   .farmer-form {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .stats-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
@@ -885,7 +944,7 @@ pre {
   }
 
   .stats-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .dashboard-page {
@@ -901,7 +960,8 @@ pre {
   }
 
   .dashboard-content {
-    padding: 22px;
+    width: 100%;
+    padding: 18px;
   }
 
   .dashboard-hero,
@@ -912,13 +972,36 @@ pre {
 }
 
 @media (max-width: 520px) {
+  body {
+    background: #f5f8f7;
+  }
+
   .dashboard-content {
-    padding: 14px;
+    padding: 12px;
   }
 
   .form-card,
   .dashboard-hero {
-    padding: 18px;
+    border-radius: 16px;
+    padding: 16px;
+  }
+
+  .dashboard-hero h2 {
+    font-size: 30px;
+  }
+
+  .dashboard-hero p:not(.eyebrow) {
+    font-size: 15px;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .stat-card {
+    min-height: 92px;
+    padding: 16px;
   }
 
   .farmer-form {
@@ -945,5 +1028,16 @@ pre {
   .technician-item {
     align-items: flex-start;
     flex-direction: column;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
   }
 }

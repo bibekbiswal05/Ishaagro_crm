@@ -153,18 +153,20 @@ function startAdminDashboard() {
   }
 
   adminListenersStarted = true;
+  renderAdminDashboard();
+
   adminUnsubscribers.push(db.collection("farmers").onSnapshot((snapshot) => {
     adminFarmers = snapshot.docs
       .map((doc) => ({ id: doc.id, ...doc.data() }))
       .filter((farmer) => farmer.id !== "_setup")
       .sort((a, b) => getTimeValue(b.createdAt || b.dateTime) - getTimeValue(a.createdAt || a.dateTime));
     renderAdminDashboard();
-  }));
+  }, showAdminDataError));
 
   adminUnsubscribers.push(db.collection("users").where("role", "==", "technician").onSnapshot((snapshot) => {
     adminTechnicians = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
     renderAdminDashboard();
-  }));
+  }, showAdminDataError));
 
   adminUnsubscribers.push(db.collection("reminders").onSnapshot((snapshot) => {
     adminReminders = snapshot.docs
@@ -172,7 +174,11 @@ function startAdminDashboard() {
       .filter((reminder) => reminder.id !== "_setup")
       .sort((a, b) => String(a.reminderDate || "").localeCompare(String(b.reminderDate || "")));
     renderAdminDashboard();
-  }));
+  }, showAdminDataError));
+}
+
+function showAdminDataError(error) {
+  farmerRecordsTable.innerHTML = `<div class="empty-state">Unable to load admin data: ${escapeHtml(error.message || "Check Firestore rules.")}</div>`;
 }
 
 function stopAdminDashboard() {
