@@ -641,6 +641,179 @@ p {
   line-height: 1;
 }
 
+.insights-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.insight-card {
+  position: relative;
+  overflow: hidden;
+  min-height: 190px;
+  padding: 18px;
+  border: 1px solid rgba(221, 231, 234, 0.86);
+  border-radius: 18px;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.96), rgba(248, 252, 249, 0.96)),
+    radial-gradient(circle at 95% 0, rgba(143, 189, 70, 0.18), transparent 30%);
+  box-shadow: 0 14px 38px rgba(23, 32, 38, 0.07);
+  animation: fadeUp 0.42s ease both;
+}
+
+.progress-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.insight-label {
+  display: block;
+  margin-bottom: 10px;
+  color: #66727d;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+}
+
+.insight-card > div > strong,
+.insight-heading strong {
+  display: block;
+  color: #172026;
+  font-size: 24px;
+  line-height: 1.2;
+}
+
+.insight-card small,
+.insight-note {
+  display: block;
+  margin-top: 8px;
+  color: #66727d;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.insight-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.donut {
+  width: 116px;
+  height: 116px;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, #ffffff 0 53%, transparent 54%),
+    conic-gradient(#3d8954 var(--progress), #dfeee4 0);
+  box-shadow: inset 0 0 0 1px rgba(47, 113, 74, 0.1);
+}
+
+.donut span {
+  color: #2f714a;
+  font-size: 22px;
+  font-weight: 900;
+}
+
+.progress-row {
+  display: grid;
+  grid-template-columns: minmax(92px, 1fr) minmax(100px, 1.4fr) 42px;
+  gap: 10px;
+  align-items: center;
+  margin-top: 12px;
+}
+
+.progress-row div:first-child strong {
+  display: block;
+  color: #24372a;
+  font-size: 14px;
+}
+
+.progress-row div:first-child span {
+  display: block;
+  margin-top: 2px;
+  color: #66727d;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.progress-track,
+.mini-track {
+  overflow: hidden;
+  height: 10px;
+  border-radius: 999px;
+  background: #e2efe5;
+}
+
+.progress-track span,
+.mini-track i {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #3d8954, #8fbd46);
+}
+
+.progress-row b {
+  color: #2f714a;
+  font-size: 13px;
+  text-align: right;
+}
+
+.mini-row {
+  display: grid;
+  grid-template-columns: minmax(90px, 1fr) minmax(90px, 1.6fr) 34px;
+  gap: 10px;
+  align-items: center;
+  margin-top: 12px;
+}
+
+.mini-row span {
+  overflow: hidden;
+  color: #24372a;
+  font-size: 13px;
+  font-weight: 900;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mini-row strong {
+  color: #2f714a;
+  font-size: 14px;
+  text-align: right;
+}
+
+.reminder-chip {
+  display: inline-flex;
+  min-height: 34px;
+  align-items: center;
+  margin-top: 16px;
+  border-radius: 999px;
+  background: #fff5cf;
+  padding: 0 12px;
+  color: #7b5700;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.empty-mini {
+  min-height: 46px;
+  display: grid;
+  place-items: center;
+  border: 1px dashed #d9e8dc;
+  border-radius: 14px;
+  color: #66727d;
+  font-size: 13px;
+  font-weight: 800;
+}
+
 .admin-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
@@ -1066,6 +1239,10 @@ pre {
   .admin-grid {
     grid-template-columns: 1fr;
   }
+
+  .insights-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 900px) {
@@ -1103,6 +1280,11 @@ pre {
 
   .stats-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .progress-card {
+    align-items: flex-start;
+    flex-direction: column;
   }
 
   .dashboard-page {
@@ -1160,6 +1342,27 @@ pre {
   .stat-card {
     min-height: 92px;
     padding: 16px;
+  }
+
+  .insight-card {
+    min-height: auto;
+    padding: 16px;
+  }
+
+  .donut {
+    width: 96px;
+    height: 96px;
+  }
+
+  .progress-row,
+  .mini-row {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+
+  .progress-row b,
+  .mini-row strong {
+    text-align: left;
   }
 
   .farmer-form {

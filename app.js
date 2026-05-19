@@ -24,6 +24,7 @@ const successOkButton = document.getElementById("successOkButton");
 const adminGreeting = document.getElementById("adminGreeting");
 const technicianGreeting = document.getElementById("technicianGreeting");
 const adminStats = document.getElementById("adminStats");
+const adminInsights = document.getElementById("adminInsights");
 const upcomingReminders = document.getElementById("upcomingReminders");
 const farmerRecordsTable = document.getElementById("farmerRecordsTable");
 const exportCsvButton = document.getElementById("exportCsvButton");
@@ -217,6 +218,7 @@ function stopAdminDashboard() {
 
 function renderAdminDashboard() {
   renderAdminStats();
+  renderAdminInsights();
   renderAdminDropdowns();
   renderRecentUpdates();
   renderAdminFarmers();
@@ -240,6 +242,109 @@ function renderAdminStats() {
 
 function statCard(label, value) {
   return `<article class="stat-card"><span>${label}</span><strong>${value}</strong></article>`;
+}
+
+function renderAdminInsights() {
+  if (!adminInsights) return;
+
+  const total = adminFarmers.length;
+  const pending = adminFarmers.filter((farmer) => (farmer.status || "Pending") === "Pending").length;
+  const completed = adminFarmers.filter((farmer) => farmer.status === "Completed").length;
+  const completionPercent = total ? Math.round((completed / total) * 100) : 0;
+  const pendingReminders = adminReminders.filter((reminder) => reminder.status !== "Completed").length;
+  const drip = adminFarmers.filter((farmer) => farmer.productType === "Drip").length;
+  const sprinkler = adminFarmers.filter((farmer) => farmer.productType === "Sprinkler").length;
+  const productTotal = drip + sprinkler;
+  const dripPercent = productTotal ? Math.round((drip / productTotal) * 100) : 0;
+  const districtRows = countTopValues(adminFarmers, "district", 4);
+  const districtCount = new Set(adminFarmers.map((farmer) => clean(farmer.district)).filter(Boolean)).size;
+  const technicianRows = countTopValues(adminFarmers, "technicianId", 4, (id) => getTechnicianName(id));
+
+  adminInsights.innerHTML = `
+    <article class="insight-card progress-card">
+      <div>
+        <span class="insight-label">Installation Progress</span>
+        <strong>${completionPercent}% completed</strong>
+        <small>${completed} completed • ${pending} pending</small>
+      </div>
+      <div class="donut" style="--progress:${completionPercent * 3.6}deg">
+        <span>${completionPercent}%</span>
+      </div>
+    </article>
+
+    <article class="insight-card">
+      <div class="insight-heading">
+        <span class="insight-label">Product Mix</span>
+        <strong>${productTotal || 0} records</strong>
+      </div>
+      ${progressRow("Drip", drip, productTotal)}
+      ${progressRow("Sprinkler", sprinkler, productTotal)}
+      <small class="insight-note">${dripPercent}% of product entries are drip installations.</small>
+    </article>
+
+    <article class="insight-card">
+      <div class="insight-heading">
+        <span class="insight-label">Technician Workload</span>
+        <strong>${adminTechnicians.length} technicians</strong>
+      </div>
+      ${miniList(technicianRows, "No technician activity yet.")}
+    </article>
+
+    <article class="insight-card">
+      <div class="insight-heading">
+        <span class="insight-label">District Spread</span>
+        <strong>${districtCount} active areas</strong>
+      </div>
+      ${miniList(districtRows, "No district data yet.")}
+      <div class="reminder-chip">${pendingReminders} pending reminders</div>
+    </article>
+  `;
+}
+
+function countTopValues(records, field, limit, labelFormatter) {
+  const counts = new Map();
+  records.forEach((record) => {
+    const rawValue = clean(record[field]) || "Not set";
+    counts.set(rawValue, (counts.get(rawValue) || 0) + 1);
+  });
+  return Array.from(counts.entries())
+    .map(([value, count]) => ({
+      label: labelFormatter ? labelFormatter(value) : value,
+      count
+    }))
+    .sort((a, b) => b.count - a.count || a.label.localeCompare(b.label))
+    .slice(0, limit);
+}
+
+function progressRow(label, value, total) {
+  const percent = total ? Math.round((value / total) * 100) : 0;
+  return `
+    <div class="progress-row">
+      <div>
+        <strong>${escapeHtml(label)}</strong>
+        <span>${value} farmer${value === 1 ? "" : "s"}</span>
+      </div>
+      <div class="progress-track" aria-label="${escapeHtml(label)} ${percent}%">
+        <span style="width:${percent}%"></span>
+      </div>
+      <b>${percent}%</b>
+    </div>
+  `;
+}
+
+function miniList(items, emptyText) {
+  if (!items.length) {
+    return `<div class="empty-mini">${escapeHtml(emptyText)}</div>`;
+  }
+
+  const max = Math.max(...items.map((item) => item.count), 1);
+  return items.map((item) => `
+    <div class="mini-row">
+      <span>${escapeHtml(item.label)}</span>
+      <div class="mini-track"><i style="width:${Math.max(12, Math.round((item.count / max) * 100))}%"></i></div>
+      <strong>${item.count}</strong>
+    </div>
+  `).join("");
 }
 
 function renderRecentUpdates() {
