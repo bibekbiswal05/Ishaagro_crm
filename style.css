@@ -299,13 +299,12 @@ p {
 }
 
 .dashboard-topbar {
-  position: fixed;
-  top: 30px;
-  right: 30px;
-  z-index: 80;
+  position: sticky;
+  top: 0;
+  z-index: 30;
   display: flex;
   justify-content: flex-end;
-  margin: 0;
+  margin: -6px 0 14px;
   pointer-events: none;
 }
 
@@ -1428,8 +1427,11 @@ pre {
   }
 
   .dashboard-topbar {
+    position: fixed;
     top: 22px;
     right: 24px;
+    z-index: 80;
+    margin: 0;
   }
 
   .dashboard-hero,
