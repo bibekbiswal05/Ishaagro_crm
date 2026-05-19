@@ -48,6 +48,30 @@ const adminTabButtons = document.querySelectorAll("[data-admin-tab]");
 const adminPanels = document.querySelectorAll("[data-admin-panel]");
 const recentUpdates = document.getElementById("recentUpdates");
 const farmerDetailPanel = document.getElementById("farmerDetailPanel");
+const profileMenus = {
+  admin: {
+    button: document.getElementById("adminProfileButton"),
+    menu: document.getElementById("adminProfileMenu"),
+    photo: document.getElementById("adminProfilePhoto"),
+    initials: document.getElementById("adminProfileInitials"),
+    menuPhoto: document.getElementById("adminProfileMenuPhoto"),
+    name: document.getElementById("adminProfileName"),
+    email: document.getElementById("adminProfileEmail"),
+    role: document.getElementById("adminProfileRole"),
+    logout: document.getElementById("adminProfileLogout")
+  },
+  technician: {
+    button: document.getElementById("technicianProfileButton"),
+    menu: document.getElementById("technicianProfileMenu"),
+    photo: document.getElementById("technicianProfilePhoto"),
+    initials: document.getElementById("technicianProfileInitials"),
+    menuPhoto: document.getElementById("technicianProfileMenuPhoto"),
+    name: document.getElementById("technicianProfileName"),
+    email: document.getElementById("technicianProfileEmail"),
+    role: document.getElementById("technicianProfileRole"),
+    logout: document.getElementById("technicianProfileLogout")
+  }
+};
 
 let currentLocation = null;
 let adminFarmers = [];
@@ -80,8 +104,18 @@ loginForm.addEventListener("submit", async (event) => {
   }
 });
 
-document.getElementById("adminLogout").addEventListener("click", logout);
-document.getElementById("technicianLogout").addEventListener("click", logout);
+Object.entries(profileMenus).forEach(([role, profile]) => {
+  profile.button.addEventListener("click", (event) => {
+    event.stopPropagation();
+    toggleProfileMenu(role);
+  });
+  profile.logout.addEventListener("click", logout);
+});
+document.addEventListener("click", (event) => {
+  if (!event.target.closest(".profile-menu-wrap")) {
+    closeProfileMenus();
+  }
+});
 captureGpsButton.addEventListener("click", captureCurrentLocation);
 farmerForm.addEventListener("submit", submitFarmerRecord);
 successOkButton.addEventListener("click", startNewFarmerForm);
@@ -132,6 +166,7 @@ async function openDashboardByRole(uid) {
 
   if (userData.role === "admin") {
     adminGreeting.textContent = "Welcome, " + (userData.name || "Admin");
+    setProfileDetails("admin", userData, auth.currentUser);
     showOnly(adminDashboard);
     startAdminDashboard();
     return;
@@ -139,6 +174,7 @@ async function openDashboardByRole(uid) {
 
   if (userData.role === "technician") {
     technicianGreeting.textContent = "Welcome, " + (userData.name || "Technician");
+    setProfileDetails("technician", userData, auth.currentUser);
     showOnly(technicianDashboard);
     resetFarmerForm();
     captureCurrentLocation();
@@ -151,6 +187,7 @@ async function openDashboardByRole(uid) {
 }
 
 async function logout() {
+  closeProfileMenus();
   stopAdminDashboard();
   await auth.signOut();
   showOnly(loginPage);
@@ -169,6 +206,37 @@ function showAdminTab(tabName) {
   });
   adminPanels.forEach((panel) => {
     panel.classList.toggle("hidden", panel.dataset.adminPanel !== tabName);
+  });
+}
+
+function setProfileDetails(profileType, userData, firebaseUser) {
+  const profile = profileMenus[profileType];
+  const name = userData.name || firebaseUser?.displayName || (profileType === "admin" ? "Admin" : "Technician");
+  const email = userData.email || firebaseUser?.email || "";
+  const role = userData.role || profileType;
+  const initials = getInitials(name, email);
+  const photoUrl = userData.photoURL || userData.photoUrl || firebaseUser?.photoURL || createProfilePhoto(name, email, role);
+
+  profile.photo.src = photoUrl;
+  profile.menuPhoto.src = photoUrl;
+  profile.initials.textContent = initials;
+  profile.name.textContent = name;
+  profile.email.textContent = email || "Email not available";
+  profile.role.textContent = role.charAt(0).toUpperCase() + role.slice(1);
+}
+
+function toggleProfileMenu(profileType) {
+  Object.entries(profileMenus).forEach(([role, profile]) => {
+    const isActive = role === profileType && profile.menu.classList.contains("hidden");
+    profile.menu.classList.toggle("hidden", !isActive);
+    profile.button.setAttribute("aria-expanded", String(isActive));
+  });
+}
+
+function closeProfileMenus() {
+  Object.values(profileMenus).forEach((profile) => {
+    profile.menu.classList.add("hidden");
+    profile.button.setAttribute("aria-expanded", "false");
   });
 }
 
@@ -907,6 +975,34 @@ function escapeHtml(value) {
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
+}
+
+function getInitials(name, email) {
+  const source = clean(name) || clean(email).split("@")[0] || "IA";
+  const parts = source.split(/\s+/).filter(Boolean);
+  const letters = parts.length > 1
+    ? parts[0][0] + parts[1][0]
+    : source.slice(0, 2);
+  return letters.toUpperCase();
+}
+
+function createProfilePhoto(name, email, role) {
+  const initials = escapeHtml(getInitials(name, email));
+  const roleColor = role === "admin" ? "#2f714a" : "#2f968b";
+  const svg = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+      <defs>
+        <linearGradient id="g" x1="0" x2="1" y1="0" y2="1">
+          <stop offset="0" stop-color="${roleColor}"/>
+          <stop offset="1" stop-color="#8fbd46"/>
+        </linearGradient>
+      </defs>
+      <rect width="128" height="128" rx="36" fill="url(#g)"/>
+      <circle cx="98" cy="30" r="22" fill="rgba(255,255,255,0.18)"/>
+      <text x="64" y="76" text-anchor="middle" font-family="Arial, sans-serif" font-size="38" font-weight="800" fill="#ffffff">${initials}</text>
+    </svg>
+  `;
+  return "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(svg);
 }
 
 function getTechnicianName(id, fallback) {

@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>IshaAgro CRM</title>
-    <link rel="stylesheet" href="style.css?v=20260519-insights" />
+    <link rel="stylesheet" href="style.css?v=20260519-profile" />
   </head>
   <body>
     <main id="loginPage" class="website-login">
@@ -68,9 +68,27 @@
           <button data-admin-tab="reminders" type="button">Reminders</button>
           <button data-admin-tab="technicians" type="button">Technicians</button>
         </nav>
-        <button id="adminLogout" class="secondary-button" type="button">Logout</button>
       </aside>
       <section class="dashboard-content">
+        <header class="dashboard-topbar">
+          <div class="profile-menu-wrap">
+            <button id="adminProfileButton" class="profile-button" type="button" aria-expanded="false" aria-controls="adminProfileMenu">
+              <img id="adminProfilePhoto" class="profile-photo" alt="Admin profile" />
+              <span id="adminProfileInitials" class="profile-initials">A</span>
+            </button>
+            <div id="adminProfileMenu" class="profile-menu-panel hidden">
+              <div class="profile-card-head">
+                <img id="adminProfileMenuPhoto" class="profile-menu-photo" alt="Admin profile" />
+                <div>
+                  <strong id="adminProfileName">Admin</strong>
+                  <small id="adminProfileEmail">admin@ishaagro.in</small>
+                </div>
+              </div>
+              <span id="adminProfileRole" class="profile-role">Admin</span>
+              <button id="adminProfileLogout" class="danger-button profile-logout" type="button">Logout</button>
+            </div>
+          </div>
+        </header>
         <section class="dashboard-hero">
           <p class="eyebrow">Irrigation CRM</p>
           <h2 id="adminGreeting">Welcome, Admin</h2>
@@ -188,9 +206,27 @@
             <small>Sai Sales by Isha Agro</small>
           </div>
         </div>
-        <button id="technicianLogout" class="secondary-button" type="button">Logout</button>
       </aside>
       <section class="dashboard-content">
+        <header class="dashboard-topbar">
+          <div class="profile-menu-wrap">
+            <button id="technicianProfileButton" class="profile-button" type="button" aria-expanded="false" aria-controls="technicianProfileMenu">
+              <img id="technicianProfilePhoto" class="profile-photo" alt="Technician profile" />
+              <span id="technicianProfileInitials" class="profile-initials">T</span>
+            </button>
+            <div id="technicianProfileMenu" class="profile-menu-panel hidden">
+              <div class="profile-card-head">
+                <img id="technicianProfileMenuPhoto" class="profile-menu-photo" alt="Technician profile" />
+                <div>
+                  <strong id="technicianProfileName">Technician</strong>
+                  <small id="technicianProfileEmail">technician@ishaagro.in</small>
+                </div>
+              </div>
+              <span id="technicianProfileRole" class="profile-role">Technician</span>
+              <button id="technicianProfileLogout" class="danger-button profile-logout" type="button">Logout</button>
+            </div>
+          </div>
+        </header>
         <section class="dashboard-hero">
           <p class="eyebrow">Field Technician</p>
           <h2 id="technicianGreeting">Welcome, Technician</h2>
@@ -249,6 +285,6 @@
     <script src="https://www.gstatic.com/firebasejs/12.13.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore-compat.js"></script>
     <script src="firebase-config.js?v=20260518-tabs"></script>
-    <script src="app.js?v=20260519-insights"></script>
+    <script src="app.js?v=20260519-profile"></script>
   </body>
 </html>
