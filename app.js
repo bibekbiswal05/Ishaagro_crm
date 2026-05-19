@@ -89,6 +89,11 @@ adminEditForm.addEventListener("submit", saveAdminFarmerEdit);
 document.getElementById("cancelEditFarmer").addEventListener("click", closeAdminEdit);
 reminderForm.addEventListener("submit", createReminder);
 technicianForm.addEventListener("submit", saveTechnician);
+farmerDetailPanel.addEventListener("click", (event) => {
+  if (event.target.closest("[data-close-farmer-details]")) {
+    closeFarmerDetails();
+  }
+});
 [filterTechnician, filterDistrict, filterStatus, filterProduct, filterInstallDate].forEach((filter) => {
   filter.addEventListener("input", renderAdminFarmers);
 });
@@ -386,7 +391,7 @@ function openFarmerDetails(farmerId) {
   farmerDetailPanel.innerHTML = `
     <div class="section-heading">
       <h3>Farmer Details</h3>
-      <button class="secondary-button" id="closeFarmerDetails" type="button">Close</button>
+      <button class="secondary-button" data-close-farmer-details type="button">Close</button>
     </div>
     <div class="detail-grid">
       ${detailItem("Farmer Name", farmer.farmerName)}
@@ -423,16 +428,16 @@ function openFarmerDetails(farmerId) {
     ` : `<div class="empty-state">No location captured for this farmer.</div>`}
   `;
 
-  document.getElementById("closeFarmerDetails").addEventListener("click", () => {
-    farmerDetailPanel.classList.add("hidden");
-    farmerDetailPanel.innerHTML = "";
-  });
-
   document.getElementById("shareLocationButton")?.addEventListener("click", () => {
     shareLocation(googleMapUrl);
   });
 
   farmerDetailPanel.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function closeFarmerDetails() {
+  farmerDetailPanel.classList.add("hidden");
+  farmerDetailPanel.innerHTML = "";
 }
 
 function detailItem(label, value) {
