@@ -569,6 +569,7 @@ function openFarmerDetails(farmerId) {
     <div class="detail-grid">
       ${detailItem("Farmer Name", farmer.farmerName)}
       ${detailItem("Mobile No", farmer.mobileNo)}
+      ${detailItem("Referal", farmer.referal)}
       ${detailItem("District", farmer.district)}
       ${detailItem("Block", farmer.block)}
       ${detailItem("GP", farmer.gp)}
@@ -639,7 +640,7 @@ function openAdminEdit(farmerId) {
   adminEditPanel.classList.remove("hidden");
   adminEditForm.elements.id.value = farmer.id;
   [
-    "farmerName", "mobileNo", "district", "block", "gp", "village", "address",
+    "farmerName", "mobileNo", "referal", "district", "block", "gp", "village", "address",
     "productType", "area", "size", "spacing", "crop", "installationDate",
     "farmerShare", "gps", "status"
   ].forEach((field) => {
@@ -666,6 +667,7 @@ async function saveAdminFarmerEdit(event) {
     await db.collection("farmers").doc(id).update({
       farmerName: clean(formData.get("farmerName")),
       mobileNo: clean(formData.get("mobileNo")),
+      referal: clean(formData.get("referal")),
       district: clean(formData.get("district")),
       block: clean(formData.get("block")),
       gp: clean(formData.get("gp")),
@@ -812,10 +814,11 @@ async function deleteTechnician(id) {
 
 function exportFarmerCsv() {
   const farmers = getFilteredFarmers();
-  const headers = ["Farmer Name", "Mobile No", "District", "Block", "GP", "Village", "Address", "Product Type", "Area (Acre)", "Size", "Spacing", "Crop", "Installation Date", "Farmer Share", "GPS", "Status", "Technician", "Location"];
+  const headers = ["Farmer Name", "Mobile No", "Referal", "District", "Block", "GP", "Village", "Address", "Product Type", "Area (Acre)", "Size", "Spacing", "Crop", "Installation Date", "Farmer Share", "GPS", "Status", "Technician", "Location"];
   const rows = farmers.map((farmer) => [
     farmer.farmerName,
     farmer.mobileNo,
+    farmer.referal,
     farmer.district,
     farmer.block,
     farmer.gp,
@@ -931,6 +934,7 @@ async function submitFarmerRecord(event) {
     await db.collection("farmers").add({
       farmerName: clean(formData.get("farmerName")),
       mobileNo: clean(formData.get("mobileNo")),
+      referal: clean(formData.get("referal")),
       district: clean(formData.get("district")),
       block: clean(formData.get("block")),
       gp: clean(formData.get("gp")),
