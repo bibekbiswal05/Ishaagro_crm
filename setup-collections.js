@@ -48,7 +48,13 @@ createCollectionsBtn.addEventListener("click", async () => {
       createdAt: timestamp
     });
 
-    setupStatus.textContent = "Done.\n\n" + role + " document created:\nusers/" + uid + "\n\nCollections created: users, farmers, reminders.";
+    await db.collection("farmerQueries").doc("_setup").set({
+      collectionName: "farmerQueries",
+      description: "Farmer query requests submitted by technicians.",
+      createdAt: timestamp
+    });
+
+    setupStatus.textContent = "Done.\n\n" + role + " document created:\nusers/" + uid + "\n\nCollections created: users, farmers, reminders, farmerQueries.";
   } catch (error) {
     setupStatus.textContent = "Error: " + error.message;
   } finally {

@@ -488,6 +488,28 @@ p {
   min-width: 170px;
 }
 
+.mode-toggle {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.mode-toggle button {
+  min-height: 54px;
+  border: 1px solid #cfe1d4;
+  border-radius: 16px;
+  background: #ffffff;
+  color: #2f714a;
+  box-shadow: 0 10px 26px rgba(23, 32, 38, 0.06);
+}
+
+.mode-toggle button.active {
+  border-color: #3d8954;
+  background: #3d8954;
+  color: #ffffff;
+}
+
 .flow-card,
 .form-card {
   border: 1px solid rgba(221, 231, 234, 0.86);
@@ -984,6 +1006,10 @@ p {
   border-collapse: collapse;
 }
 
+.query-table {
+  min-width: 920px;
+}
+
 .records-table th,
 .records-table td {
   padding: 12px;
@@ -1394,6 +1420,10 @@ pre {
   .flow-card {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .mode-toggle {
+    grid-template-columns: 1fr;
   }
 
   .stats-grid {

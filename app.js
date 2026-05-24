@@ -12,6 +12,13 @@ const loginMessage = document.getElementById("loginMessage");
 const togglePassword = document.getElementById("togglePassword");
 const farmerForm = document.getElementById("farmerForm");
 const farmerMessage = document.getElementById("farmerMessage");
+const farmerRegistrationPanel = document.getElementById("farmerRegistrationPanel");
+const farmerQueryPanel = document.getElementById("farmerQueryPanel");
+const farmerQueryForm = document.getElementById("farmerQueryForm");
+const farmerQueryMessage = document.getElementById("farmerQueryMessage");
+const farmerQueryTable = document.getElementById("farmerQueryTable");
+const showRegistrationButton = document.getElementById("showRegistrationButton");
+const showQueryButton = document.getElementById("showQueryButton");
 const captureGpsButton = document.getElementById("captureGpsButton");
 const dateTimeAuto = document.getElementById("dateTimeAuto");
 const locationAuto = document.getElementById("locationAuto");
@@ -75,6 +82,7 @@ const profileMenus = {
 
 let currentLocation = null;
 let adminFarmers = [];
+let adminFarmerQueries = [];
 let adminTechnicians = [];
 let adminReminders = [];
 let adminUnsubscribers = [];
@@ -118,6 +126,9 @@ document.addEventListener("click", (event) => {
 });
 captureGpsButton.addEventListener("click", captureCurrentLocation);
 farmerForm.addEventListener("submit", submitFarmerRecord);
+farmerQueryForm.addEventListener("submit", submitFarmerQuery);
+showRegistrationButton.addEventListener("click", () => showTechnicianWorkflow("registration"));
+showQueryButton.addEventListener("click", () => showTechnicianWorkflow("query"));
 successOkButton.addEventListener("click", startNewFarmerForm);
 exportCsvButton.addEventListener("click", exportFarmerCsv);
 adminEditForm.addEventListener("submit", saveAdminFarmerEdit);
@@ -176,7 +187,9 @@ async function openDashboardByRole(uid) {
     technicianGreeting.textContent = "Welcome, " + (userData.name || "Technician");
     setProfileDetails("technician", userData, auth.currentUser);
     showOnly(technicianDashboard);
+    showTechnicianWorkflow("registration");
     resetFarmerForm();
+    resetFarmerQueryForm();
     captureCurrentLocation();
     return;
   }
@@ -257,6 +270,14 @@ function startAdminDashboard() {
     renderAdminDashboard();
   }, showAdminDataError));
 
+  adminUnsubscribers.push(db.collection("farmerQueries").onSnapshot((snapshot) => {
+    adminFarmerQueries = snapshot.docs
+      .map((doc) => ({ id: doc.id, ...doc.data() }))
+      .filter((query) => query.id !== "_setup")
+      .sort((a, b) => getTimeValue(b.createdAt) - getTimeValue(a.createdAt));
+    renderAdminDashboard();
+  }, showAdminDataError));
+
   adminUnsubscribers.push(db.collection("users").where("role", "==", "technician").onSnapshot((snapshot) => {
     adminTechnicians = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
     renderAdminDashboard();
@@ -280,6 +301,7 @@ function stopAdminDashboard() {
   adminUnsubscribers = [];
   adminListenersStarted = false;
   adminFarmers = [];
+  adminFarmerQueries = [];
   adminTechnicians = [];
   adminReminders = [];
 }
@@ -290,6 +312,7 @@ function renderAdminDashboard() {
   renderAdminDropdowns();
   renderRecentUpdates();
   renderAdminFarmers();
+  renderFarmerQueries();
   renderUpcomingReminders();
   renderTechnicianList();
 }
@@ -543,6 +566,44 @@ function renderAdminFarmers() {
   farmerRecordsTable.querySelectorAll("[data-status-farmer]").forEach((select) => {
     select.addEventListener("change", () => updateFarmerStatus(select.dataset.statusFarmer, select.value));
   });
+}
+
+function renderFarmerQueries() {
+  if (!farmerQueryTable) return;
+
+  if (!adminFarmerQueries.length) {
+    farmerQueryTable.innerHTML = `<div class="empty-state">No farmer queries found.</div>`;
+    return;
+  }
+
+  farmerQueryTable.innerHTML = `
+    <table class="records-table query-table">
+      <thead>
+        <tr>
+          <th>Farmer</th>
+          <th>Mobile</th>
+          <th>Address</th>
+          <th>Area</th>
+          <th>Product</th>
+          <th>Technician</th>
+          <th>Submitted</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${adminFarmerQueries.map((query) => `
+          <tr>
+            <td><strong>${escapeHtml(query.farmerName || "")}</strong></td>
+            <td>${escapeHtml(query.mobileNo || "")}</td>
+            <td>${escapeHtml(query.address || "")}</td>
+            <td>${escapeHtml(query.area || "")}</td>
+            <td>${escapeHtml(query.productType || "")}</td>
+            <td>${escapeHtml(getTechnicianName(query.technicianId, query.technicianEmail))}</td>
+            <td>${escapeHtml(formatDateTime(query.createdAt))}</td>
+          </tr>
+        `).join("")}
+      </tbody>
+    </table>
+  `;
 }
 
 async function updateFarmerStatus(farmerId, status) {
@@ -856,6 +917,19 @@ function resetFarmerForm() {
   openMapLink.href = "#";
 }
 
+function showTechnicianWorkflow(workflow) {
+  const isQuery = workflow === "query";
+  farmerRegistrationPanel.classList.toggle("hidden", isQuery);
+  farmerQueryPanel.classList.toggle("hidden", !isQuery);
+  showRegistrationButton.classList.toggle("active", !isQuery);
+  showQueryButton.classList.toggle("active", isQuery);
+}
+
+function resetFarmerQueryForm() {
+  farmerQueryForm.reset();
+  farmerQueryMessage.textContent = "";
+}
+
 function setAutoDateTime() {
   const now = new Date();
   dateTimeAuto.value = now.toLocaleString();
@@ -965,6 +1039,41 @@ async function submitFarmerRecord(event) {
   } finally {
     submitFarmerButton.disabled = false;
     submitFarmerButton.textContent = "Submit Farmer";
+  }
+}
+
+async function submitFarmerQuery(event) {
+  event.preventDefault();
+  farmerQueryMessage.textContent = "";
+
+  if (!auth.currentUser) {
+    farmerQueryMessage.textContent = "Please login again.";
+    return;
+  }
+
+  const submitButton = farmerQueryForm.querySelector("button[type='submit']");
+  submitButton.disabled = true;
+  submitButton.textContent = "Saving...";
+
+  try {
+    const formData = new FormData(farmerQueryForm);
+    await db.collection("farmerQueries").add({
+      farmerName: clean(formData.get("farmerName")),
+      mobileNo: clean(formData.get("mobileNo")),
+      address: clean(formData.get("address")),
+      area: clean(formData.get("area")),
+      productType: formData.get("productType"),
+      technicianId: auth.currentUser.uid,
+      technicianEmail: auth.currentUser.email,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    resetFarmerQueryForm();
+    farmerQueryMessage.textContent = "Farmer query submitted.";
+  } catch (error) {
+    farmerQueryMessage.textContent = error.message || "Failed to save farmer query.";
+  } finally {
+    submitButton.disabled = false;
+    submitButton.textContent = "Submit Query";
   }
 }
 
