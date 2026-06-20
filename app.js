@@ -153,7 +153,13 @@ auth.onAuthStateChanged(async (user) => {
     return;
   }
 
-  await openDashboardByRole(user.uid);
+  try {
+    await openDashboardByRole(user.uid);
+  } catch (error) {
+    loginMessage.textContent = getRoleLookupError(error);
+    await auth.signOut();
+    showOnly(loginPage);
+  }
 });
 
 async function openDashboardByRole(uid) {
@@ -1166,4 +1172,12 @@ function getLoginError(error) {
   }
 
   return error.message || "Login failed.";
+}
+
+function getRoleLookupError(error) {
+  if (error.code === "permission-denied") {
+    return "Login successful, but Firestore rules are blocking the users role document. Allow users to read their own users/{uid} document.";
+  }
+
+  return error.message || "Unable to load user role.";
 }
